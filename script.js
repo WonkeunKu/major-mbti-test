@@ -313,7 +313,7 @@ function finish() {
 
   // CTA 링크: 너의 구글폼/랜딩 링크로 바꿔!
   // 예) el.ctaLink.href = "https://docs.google.com/forms/....";
-  el.ctaLink.href = "https://example.com";
+  el.ctaLink.href = "hhttps://docs.google.com/forms/d/e/1FAIpQLSfZKqw6d-evU8WFqyNV7TZ6rk46faFrDj9OuzhdzMwwrSRP_w/viewform?usp=header";
 
   show(el.result);
 }
@@ -357,7 +357,7 @@ function tryLoadFromUrl() {
   el.resultDesc.textContent = data.desc;
   el.resultMajor.textContent = data.major;
   el.resultWhy.textContent = data.why;
-  el.ctaLink.href = "https://example.com";
+  el.ctaLink.href = "https://docs.google.com/forms/d/e/1FAIpQLSfZKqw6d-evU8WFqyNV7TZ6rk46faFrDj9OuzhdzMwwrSRP_w/viewform?usp=header";
   show(el.result);
 }
 
