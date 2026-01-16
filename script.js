@@ -1,4 +1,10 @@
 // ======================
+// 0) 구글폼 링크 (여기만 바꾸면 전체 CTA가 바뀜)
+// ======================
+const GOOGLE_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLSfZKqw6d-evU8WFqyNV7TZ6rk46faFrDj9OuzhdzMwwrSRP_w/viewform?usp=header";
+
+// ======================
 // 1) 질문(12개) + 축 점수
 // - A/B 중 하나를 선택하면 해당 축 점수에 +1
 // - 3문항 중 과반(2개 이상)이 그 축의 글자
@@ -75,7 +81,6 @@ const QUESTIONS = [
 
 // ======================
 // 2) 결과(16타입) 문구 + 추천학과
-// (이전 대화에서 만든 매핑을 그대로 사용)
 // ======================
 const RESULTS = {
   ESTJ: {
@@ -176,7 +181,6 @@ const RESULTS = {
   },
 };
 
-// 타입이 없는 경우 대비(이론상 없음)
 const FALLBACK = {
   major: "자유전공/융합",
   oneLiner: "탐색 중인 융합형",
@@ -185,7 +189,7 @@ const FALLBACK = {
 };
 
 // ======================
-// 3) UI 상태관리
+// 3) DOM
 // ======================
 const el = {
   intro: document.getElementById("intro"),
@@ -215,10 +219,8 @@ const el = {
 el.qTotal.textContent = String(QUESTIONS.length);
 
 let current = 0;
-// answers[i] = "A" | "B"
-let answers = new Array(QUESTIONS.length).fill(null);
+let answers = new Array(QUESTIONS.length).fill(null); // "A" | "B" | null
 
-// 점수 집계 (각 축에서 E/I, S/N, T/F, J/P 각각 몇 번 골랐는지)
 function computeType() {
   const counts = {
     EI: { E: 0, I: 0 },
@@ -235,7 +237,6 @@ function computeType() {
     counts[pick.axis][pick.pick] += 1;
   }
 
-  // 과반 로직(3문항이므로 2 이상인 쪽)
   const E = counts.EI.E >= 2 ? "E" : "I";
   const N = counts.SN.N >= 2 ? "N" : "S";
   const T = counts.TF.T >= 2 ? "T" : "F";
@@ -251,6 +252,13 @@ function show(section) {
   section.classList.remove("hidden");
 }
 
+function markSelected(ans) {
+  const base = "rgba(27,42,85,.55)";
+  const sel = "rgba(98,138,255,.25)";
+  el.choiceA.style.background = ans === "A" ? sel : base;
+  el.choiceB.style.background = ans === "B" ? sel : base;
+}
+
 function renderQuestion() {
   const q = QUESTIONS[current];
   el.qIndex.textContent = String(current + 1);
@@ -259,32 +267,19 @@ function renderQuestion() {
   el.choiceA.textContent = "A. " + q.a.text;
   el.choiceB.textContent = "B. " + q.b.text;
 
-  // 진행바
-  const pct = ((current) / (QUESTIONS.length)) * 100;
+  const pct = (current / QUESTIONS.length) * 100;
   el.progressFill.style.width = `${pct}%`;
 
-  // 이전 버튼 활성화
   el.backBtn.disabled = current === 0;
   el.backBtn.style.opacity = current === 0 ? "0.5" : "1";
 
-  // 선택 표시(선택했다면)
-  const ans = answers[current];
-  markSelected(ans);
-}
-
-function markSelected(ans) {
-  // 간단한 선택 표시(배경 바꾸기)
-  const base = "rgba(27,42,85,.55)";
-  const sel = "rgba(98,138,255,.25)";
-  el.choiceA.style.background = ans === "A" ? sel : base;
-  el.choiceB.style.background = ans === "B" ? sel : base;
+  markSelected(answers[current]);
 }
 
 function answerAndNext(which) {
   answers[current] = which;
   markSelected(which);
 
-  // 마지막 질문이면 결과로
   if (current === QUESTIONS.length - 1) {
     finish();
     return;
@@ -294,13 +289,12 @@ function answerAndNext(which) {
 }
 
 function finish() {
-  // 진행바 100%
   el.progressFill.style.width = `100%`;
 
   const type = computeType();
   const data = RESULTS[type] || FALLBACK;
 
-  // URL에 타입 넣어서 공유 가능하게
+  // 공유 링크용: ?type=XXXX
   const url = new URL(window.location.href);
   url.searchParams.set("type", type);
   window.history.replaceState({}, "", url.toString());
@@ -311,9 +305,8 @@ function finish() {
   el.resultMajor.textContent = data.major;
   el.resultWhy.textContent = data.why;
 
-  // CTA 링크: 너의 구글폼/랜딩 링크로 바꿔!
-  // 예) el.ctaLink.href = "https://docs.google.com/forms/....";
-  el.ctaLink.href = "https://example.com";
+  // ✅ CTA: 구글폼 이동
+  el.ctaLink.href = GOOGLE_FORM_URL;
 
   show(el.result);
 }
@@ -334,7 +327,6 @@ function startQuiz() {
   renderQuestion();
 }
 
-// 결과 링크 복사
 async function copyResultLink() {
   try {
     await navigator.clipboard.writeText(window.location.href);
@@ -345,23 +337,27 @@ async function copyResultLink() {
   }
 }
 
-// URL에 type=XXXX 있으면 바로 결과 보여주기(공유용)
+// 공유 링크로 결과만 보기: ?type=ENTP
 function tryLoadFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const type = params.get("type");
   if (!type) return;
 
   const data = RESULTS[type] || FALLBACK;
+
   el.resultType.textContent = type;
   el.resultOneLiner.textContent = data.oneLiner;
   el.resultDesc.textContent = data.desc;
   el.resultMajor.textContent = data.major;
   el.resultWhy.textContent = data.why;
-  el.ctaLink.href = "https://example.com";
+
+  // ✅ CTA: 구글폼 이동
+  el.ctaLink.href = GOOGLE_FORM_URL;
+
   show(el.result);
 }
 
-// 이벤트 연결
+// 이벤트
 el.startBtn.addEventListener("click", startQuiz);
 el.choiceA.addEventListener("click", () => answerAndNext("A"));
 el.choiceB.addEventListener("click", () => answerAndNext("B"));
@@ -376,5 +372,4 @@ el.resetBtn.addEventListener("click", resetAll);
 el.restartBtn.addEventListener("click", resetAll);
 el.copyBtn.addEventListener("click", copyResultLink);
 
-// 최초 실행
 tryLoadFromUrl();
