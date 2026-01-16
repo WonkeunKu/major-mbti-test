@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>학과 MBTI 테스트 (12문항)</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>학과 MBTI 테스트</h1>
+      <p class="sub">12문항 2지선다 · 결과는 16타입 + 추천 학과로 보여줘요</p>
+    </header>
+
+    <!-- Intro -->
+    <section id="intro" class="card">
+      <h2>시작하기</h2>
+      <p class="muted">
+        각 문항에서 더 가까운 선택지를 골라주세요. (정답 없음)
+      </p>
+      <button id="startBtn" class="btn primary">테스트 시작</button>
+    </section>
+
+    <!-- Quiz -->
+    <section id="quiz" class="card hidden">
+      <div class="progress-wrap">
+        <div class="progress-text">
+          <span id="qIndex">1</span> / <span id="qTotal">12</span>
+        </div>
+        <div class="progress-bar">
+          <div id="progressFill" class="progress-fill"></div>
+        </div>
+      </div>
+
+      <h2 id="questionTitle" class="question">질문</h2>
+
+      <div class="choices">
+        <button id="choiceA" class="btn choice">A</button>
+        <button id="choiceB" class="btn choice">B</button>
+      </div>
+
+      <div class="actions">
+        <button id="backBtn" class="btn ghost">← 이전</button>
+        <button id="resetBtn" class="btn ghost">처음으로</button>
+      </div>
+    </section>
+
+    <!-- Result -->
+    <section id="result" class="card hidden">
+      <div class="result-top">
+        <h2 id="resultType">ENTP</h2>
+        <p id="resultOneLiner" class="one-liner">한 줄 요약</p>
+      </div>
+
+      <div class="result-body">
+        <div class="result-block">
+          <h3>당신의 성향</h3>
+          <p id="resultDesc"></p>
+        </div>
+
+        <div class="result-block">
+          <h3>추천 학과</h3>
+          <p class="major"><span id="resultMajor"></span></p>
+          <p id="resultWhy" class="muted"></p>
+        </div>
+
+        <div class="result-block cta">
+          <h3>학과 체험으로 이어가기</h3>
+          <p class="muted">결과가 흥미로웠다면, 이 학과를 직접 체험해보는 게 제일 빨라요.</p>
+          <!-- 여기 링크만 너의 랜딩/구글폼으로 바꾸면 됨 -->
+          <a id="ctaLink" class="btn primary" href="#" target="_blank" rel="noopener">학과 체험 신청하기</a>
+        </div>
+      </div>
+
+      <div class="share">
+        <button id="copyBtn" class="btn">결과 링크 복사</button>
+        <button id="restartBtn" class="btn ghost">다시 하기</button>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p class="muted">© 학과 MBTI 테스트</p>
+    </footer>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
